@@ -1,14 +1,14 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
-export const AuthContext = createContext();
+export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('transitUser');
+    const storedUser = localStorage.getItem('user');
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
       setUser(parsedUser);
@@ -19,14 +19,17 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
-    localStorage.setItem('transitUser', JSON.stringify(response.data));
-    axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-    setUser(response.data);
+    
+    if (response.data && response.data.token) {
+      localStorage.setItem('user', JSON.stringify(response.data));
+      axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+      setUser(response.data);
+    }
     return response.data;
   };
 
   const logout = () => {
-    localStorage.removeItem('transitUser');
+    localStorage.removeItem('user');
     delete axios.defaults.headers.common['Authorization'];
     setUser(null);
   };
