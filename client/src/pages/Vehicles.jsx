@@ -40,7 +40,6 @@ export default function Vehicles() {
 
   return (
     <div className="flex flex-col lg:flex-row gap-6 font-sans">
-      {/* Registration Form Panel */}
       <div className="w-full lg:w-1/3 bg-white border border-[#E2E8F0] p-6 rounded-2xl shadow-xl shadow-slate-100/50 h-fit">
         <h2 className="text-xl font-bold text-[#0F172A] mb-5">Register Vehicle</h2>
         {error && <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-xs font-medium border border-red-100">{error}</div>}
@@ -80,7 +79,6 @@ export default function Vehicles() {
         </form>
       </div>
 
-      {/* Inventory Panel */}
       <div className="flex-1 bg-white border border-[#E2E8F0] p-6 rounded-2xl shadow-xl shadow-slate-100/50 overflow-hidden">
         <h2 className="text-xl font-bold text-[#0F172A] mb-5">Fleet Registry</h2>
         {loading ? (
