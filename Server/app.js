@@ -5,6 +5,7 @@ const vehicleRoutes = require('./routes/vehicleRoutes');
 const driverRoutes = require('./routes/driverRoutes');
 const tripRoutes = require('./routes/tripRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const opsRoutes = require('./routes/opsRoutes');
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use('/api/vehicles', vehicleRoutes);
 app.use('/api/drivers', driverRoutes);
 app.use('/api/trips', tripRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/ops', opsRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'TransitOps API running smoothly' });
