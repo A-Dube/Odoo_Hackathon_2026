@@ -1,22 +1,23 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
+import axios from 'axios';
 
-const Login = () => {
+const Signup = () => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('Fleet Manager');
   const [error, setError] = useState('');
-  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     try {
-      await login(email, password);
-      navigate('/');
+      await axios.post('http://localhost:5000/api/auth/register', { name, email, password, role });
+      navigate('/login');
     } catch (err) {
-      setError(err.response?.data?.message || 'Authentication error');
+      setError(err.response?.data?.message || 'Registration error');
     }
   };
 
@@ -36,7 +37,7 @@ const Login = () => {
       </div>
 
       <div className="max-w-md w-full bg-white rounded-2xl border border-[#E2E8F0] p-8 shadow-xl shadow-slate-100/50">
-        <h2 className="text-xl font-bold text-[#0F172A] mb-6">Sign In</h2>
+        <h2 className="text-xl font-bold text-[#0F172A] mb-6">Create Account</h2>
 
         {error && (
           <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-xs border border-red-100 font-medium">
@@ -45,6 +46,20 @@ const Login = () => {
         )}
 
         <form className="space-y-5" onSubmit={handleSubmit}>
+          <div>
+            <label className="block text-[10px] font-bold text-[#64748B] tracking-wider uppercase mb-1.5">
+              Full Name
+            </label>
+            <input 
+              type="text" 
+              required 
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="John Doe"
+              className="w-full px-4 py-2.5 bg-white border border-[#E2E8F0] rounded-lg text-sm text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:border-[#0F172A] transition-colors"
+            />
+          </div>
+
           <div>
             <label className="block text-[10px] font-bold text-[#64748B] tracking-wider uppercase mb-1.5">
               Email Address
@@ -67,14 +82,25 @@ const Login = () => {
           </div>
 
           <div>
-            <div className="flex justify-between items-center mb-1.5">
-              <label className="text-[10px] font-bold text-[#64748B] tracking-wider uppercase">
-                Password
-              </label>
-              <a href="#forgot" className="text-xs font-semibold text-[#475569] hover:underline">
-                Forgot Password?
-              </a>
-            </div>
+            <label className="block text-[10px] font-bold text-[#64748B] tracking-wider uppercase mb-1.5">
+              Role Designation
+            </label>
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="w-full px-4 py-2.5 bg-white border border-[#E2E8F0] rounded-lg text-sm text-[#0F172A] focus:outline-none focus:border-[#0F172A] transition-colors cursor-pointer"
+            >
+              <option value="Fleet Manager">Fleet Manager</option>
+              <option value="Driver">Driver</option>
+              <option value="Safety Officer">Safety Officer</option>
+              <option value="Financial Analyst">Financial Analyst</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-[10px] font-bold text-[#64748B] tracking-wider uppercase mb-1.5">
+              Password
+            </label>
             <input 
               type="password" 
               required 
@@ -85,28 +111,17 @@ const Login = () => {
             />
           </div>
 
-          <div className="flex items-center">
-            <input 
-              id="remember" 
-              type="checkbox" 
-              className="w-4 h-4 border-[#E2E8F0] rounded text-[#0F172A] focus:ring-0 cursor-pointer"
-            />
-            <label htmlFor="remember" className="ml-2.5 text-xs font-medium text-[#64748B] cursor-pointer">
-              Remember me on this device
-            </label>
-          </div>
-
           <button 
             type="submit" 
-            className="w-full bg-[#0F172A] hover:bg-[#1E293B] text-white font-semibold py-2.5 px-4 rounded-lg text-sm transition-colors mt-2"
+            className="w-full bg-[#0F172A] hover:bg-[#1E293B] text-white font-semibold py-2.5 px-4 rounded-lg text-sm transition-colors mt-4"
           >
-            Login
+            Register Account
           </button>
         </form>
 
         <div className="mt-6 pt-5 border-t border-[#F1F5F9] text-center">
           <p className="text-xs font-medium text-[#64748B]">
-            Need an account? <Link to="/signup" className="text-[#475569] font-semibold hover:underline">Create Account</Link>
+            Already have an account? <Link to="/login" className="text-[#475569] font-semibold hover:underline">Sign In Instead</Link>
           </p>
         </div>
       </div>
@@ -118,4 +133,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Signup;

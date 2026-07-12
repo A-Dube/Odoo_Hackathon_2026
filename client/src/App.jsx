@@ -2,23 +2,23 @@ import React, { useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import Login from './pages/Login';
+import Signup from './pages/Signup';
 
 function AppContent() {
   const { user, logout } = useContext(AuthContext);
 
-  // If the user isn't logged in, strictly show the Login screen
   if (!user) {
     return (
       <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </Router>
     );
   }
 
-  // Temporary landing screen to verify successful authentication bypasses the login panel
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">
       <div className="max-w-md w-full bg-white rounded-xl border border-slate-200 p-6 text-center shadow-md">
