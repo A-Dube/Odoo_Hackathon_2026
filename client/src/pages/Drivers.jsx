@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { getAllDrivers, createNewDriver } from '../services/driverService';
+import { getAllDrivers, createNewDriver, deleteDriverById } from '../services/driverService';
 
 export default function Drivers() {
   const [drivers, setDrivers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [deletingId, setDeletingId] = useState(null);
   const [formData, setFormData] = useState({
-    name: '', licenseNumber: '', licenseCategory: '', licenseExpiryDate: '', contact: '', safetyScore: '100', status: 'Available'
+    name: '', licenseNumber: '', licenseCategory: '', licenseExpiryDate: '', contactNumber: '', safetyScore: '100', status: 'Available'
   });
 
   useEffect(() => { fetchDrivers(); }, []);
@@ -31,10 +32,26 @@ export default function Drivers() {
         ...formData,
         safetyScore: Number(formData.safetyScore)
       });
-      setFormData({ name: '', licenseNumber: '', licenseCategory: '', licenseExpiryDate: '', contact: '', safetyScore: '100', status: 'Available' });
+      setFormData({ name: '', licenseNumber: '', licenseCategory: '', licenseExpiryDate: '', contactNumber: '', safetyScore: '100', status: 'Available' });
       fetchDrivers();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to add driver');
+    }
+  };
+
+  const handleDelete = async (id, name) => {
+    const confirmed = window.confirm(`Remove driver ${name} from the roster? This cannot be undone.`);
+    if (!confirmed) return;
+
+    setError('');
+    setDeletingId(id);
+    try {
+      await deleteDriverById(id);
+      setDrivers((prev) => prev.filter((d) => d._id !== id));
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to delete driver');
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -66,11 +83,28 @@ export default function Drivers() {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-[10px] font-bold text-[#64748B] tracking-wider uppercase mb-1">Contact</label>
-              <input type="text" required value={formData.contact} onChange={(e) => setFormData({...formData, contact: e.target.value})} placeholder="555-0199" className="w-full px-4 py-2 bg-white border border-[#E2E8F0] rounded-lg text-sm text-[#0F172A] focus:outline-none focus:border-[#0F172A]" />
+              <input type="text" required value={formData.contactNumber} onChange={(e) => setFormData({...formData, contactNumber: e.target.value})} placeholder="555-0199" className="w-full px-4 py-2 bg-white border border-[#E2E8F0] rounded-lg text-sm text-[#0F172A] focus:outline-none focus:border-[#0F172A]" />
             </div>
             <div>
               <label className="block text-[10px] font-bold text-[#64748B] tracking-wider uppercase mb-1">Safety Score</label>
-              <input type="number" required value={formData.safetyScore} onChange={(e) => setFormData({...formData, safetyScore: e.target.value})} placeholder="100" className="w-full px-4 py-2 bg-white border border-[#E2E8F0] rounded-lg text-sm text-[#0F172A] focus:outline-none focus:border-[#0F172A]" />
+              <input
+                type="number"
+                required
+                min="0"
+                max="100"
+                value={formData.safetyScore}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  if (raw === '') {
+                    setFormData({ ...formData, safetyScore: '' });
+                    return;
+                  }
+                  const clamped = Math.min(100, Math.max(0, Number(raw)));
+                  setFormData({ ...formData, safetyScore: String(clamped) });
+                }}
+                placeholder="100"
+                className="w-full px-4 py-2 bg-white border border-[#E2E8F0] rounded-lg text-sm text-[#0F172A] focus:outline-none focus:border-[#0F172A]"
+              />
             </div>
           </div>
           <button type="submit" className="w-full bg-[#0F172A] hover:bg-[#1E293B] text-white font-semibold py-2.5 rounded-lg text-sm transition-colors mt-2">
@@ -94,6 +128,7 @@ export default function Drivers() {
                   <th className="p-3 text-[10px] font-bold text-[#64748B] uppercase tracking-wider">License ID</th>
                   <th className="p-3 text-[10px] font-bold text-[#64748B] uppercase tracking-wider">Safety Rating</th>
                   <th className="p-3 text-[10px] font-bold text-[#64748B] uppercase tracking-wider text-center">Status</th>
+                  <th className="p-3 text-[10px] font-bold text-[#64748B] uppercase tracking-wider text-center">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
@@ -109,6 +144,15 @@ export default function Drivers() {
                       <span className={`px-2 py-0.5 text-xs font-bold rounded-md ${
                         d.status === 'Available' ? 'bg-emerald-50 text-emerald-700' : 'bg-blue-50 text-blue-700'
                       }`}>{d.status}</span>
+                    </td>
+                    <td className="p-3 text-center">
+                      <button
+                        onClick={() => handleDelete(d._id, d.name)}
+                        disabled={deletingId === d._id}
+                        className="px-2.5 py-1 border border-red-200 text-red-600 font-bold text-xs rounded hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      >
+                        {deletingId === d._id ? 'Removing...' : 'Delete'}
+                      </button>
                     </td>
                   </tr>
                 ))}

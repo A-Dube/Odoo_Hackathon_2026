@@ -5,6 +5,7 @@ import { AuthContext } from '../context/AuthContext';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ const Login = () => {
     e.preventDefault();
     setError('');
     try {
-      await login(email, password);
+      await login(email, password, rememberMe);
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || 'Authentication error');
@@ -88,6 +89,8 @@ const Login = () => {
             <input 
               id="remember" 
               type="checkbox" 
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
               className="w-4 h-4 border-[#E2E8F0] rounded text-[#0F172A] focus:ring-0 cursor-pointer"
             />
             <label htmlFor="remember" className="ml-2.5 text-xs font-medium text-[#64748B] cursor-pointer">

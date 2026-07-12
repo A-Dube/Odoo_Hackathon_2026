@@ -1,25 +1,26 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:5000/api/vehicles';
-
-const getAuthHeaders = () => {
-  const user = JSON.parse(localStorage.getItem('user'));
-  return {
-    headers: { Authorization: user && user.token ? `Bearer ${user.token}` : '' }
-  };
-};
+import api from './api';
 
 export const getAllVehicles = async () => {
-  const response = await axios.get(API_URL, getAuthHeaders());
+  const response = await api.get('/vehicles');
+  return response.data;
+};
+
+export const getVehicleById = async (id) => {
+  const response = await api.get(`/vehicles/${id}`);
   return response.data;
 };
 
 export const createNewVehicle = async (vehicleData) => {
-  const response = await axios.post(API_URL, vehicleData, getAuthHeaders());
+  const response = await api.post('/vehicles', vehicleData);
+  return response.data;
+};
+
+export const updateVehicleById = async (id, vehicleData) => {
+  const response = await api.put(`/vehicles/${id}`, vehicleData);
   return response.data;
 };
 
 export const deleteVehicleById = async (id) => {
-  const response = await axios.delete(`${API_URL}/${id}`, getAuthHeaders());
+  const response = await api.delete(`/vehicles/${id}`);
   return response.data;
 };

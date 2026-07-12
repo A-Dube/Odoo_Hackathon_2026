@@ -5,6 +5,7 @@ export default function Vehicles() {
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [deletingId, setDeletingId] = useState(null);
   const [formData, setFormData] = useState({
     registrationNumber: '', model: '', vehicleType: '', maxLoadCapacity: '', odometer: '', acquisitionCost: '', status: 'Available'
   });
@@ -35,6 +36,22 @@ export default function Vehicles() {
       fetchVehicles();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to register vehicle');
+    }
+  };
+
+  const handleDelete = async (id, registrationNumber) => {
+    const confirmed = window.confirm(`Remove vehicle ${registrationNumber} from the fleet? This cannot be undone.`);
+    if (!confirmed) return;
+
+    setError('');
+    setDeletingId(id);
+    try {
+      await deleteVehicleById(id);
+      setVehicles((prev) => prev.filter((v) => v._id !== id));
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to delete vehicle');
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -94,6 +111,7 @@ export default function Vehicles() {
                   <th className="p-3 text-[10px] font-bold text-[#64748B] uppercase tracking-wider">Type</th>
                   <th className="p-3 text-[10px] font-bold text-[#64748B] uppercase tracking-wider">Load Cap</th>
                   <th className="p-3 text-[10px] font-bold text-[#64748B] uppercase tracking-wider text-center">Status</th>
+                  <th className="p-3 text-[10px] font-bold text-[#64748B] uppercase tracking-wider text-center">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
@@ -109,6 +127,15 @@ export default function Vehicles() {
                       <span className={`px-2 py-0.5 text-xs font-bold rounded-md ${
                         v.status === 'Available' ? 'bg-emerald-50 text-emerald-700' : 'bg-blue-50 text-blue-700'
                       }`}>{v.status}</span>
+                    </td>
+                    <td className="p-3 text-center">
+                      <button
+                        onClick={() => handleDelete(v._id, v.registrationNumber)}
+                        disabled={deletingId === v._id}
+                        className="px-2.5 py-1 border border-red-200 text-red-600 font-bold text-xs rounded hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      >
+                        {deletingId === v._id ? 'Removing...' : 'Delete'}
+                      </button>
                     </td>
                   </tr>
                 ))}

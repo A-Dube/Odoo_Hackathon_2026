@@ -1,35 +1,26 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:5000/api/trips';
-
-const getAuthHeaders = () => {
-  const user = JSON.parse(localStorage.getItem('user'));
-  return {
-    headers: { Authorization: user && user.token ? `Bearer ${user.token}` : '' }
-  };
-};
+import api from './api';
 
 export const getAllTrips = async () => {
-  const response = await axios.get(API_URL, getAuthHeaders());
+  const response = await api.get('/trips');
   return response.data;
 };
 
 export const createNewTrip = async (tripData) => {
-  const response = await axios.post(API_URL, tripData, getAuthHeaders());
+  const response = await api.post('/trips', tripData);
   return response.data;
 };
 
 export const dispatchTripAction = async (id) => {
-  const response = await axios.put(`${API_URL}/${id}/dispatch`, {}, getAuthHeaders());
+  const response = await api.put(`/trips/${id}/dispatch`);
   return response.data;
 };
 
 export const completeTripAction = async (id) => {
-  const response = await axios.put(`${API_URL}/${id}/complete`, {}, getAuthHeaders());
+  const response = await api.put(`/trips/${id}/complete`);
   return response.data;
 };
 
 export const cancelTripAction = async (id) => {
-  const response = await axios.put(`${API_URL}/${id}/cancel`, {}, getAuthHeaders());
+  const response = await api.put(`/trips/${id}/cancel`);
   return response.data;
 };

@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 
 export const AuthContext = createContext(null);
 
@@ -8,21 +8,30 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
+    const storedUser =
+      localStorage.getItem('user') || sessionStorage.getItem('user');
+
     if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
-      setUser(parsedUser);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${parsedUser.token}`;
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch {
+        localStorage.removeItem('user');
+        sessionStorage.removeItem('user');
+      }
     }
     setLoading(false);
   }, []);
 
-  const login = async (email, password) => {
-    const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
-    
+  const login = async (email, password, rememberMe = false) => {
+    const response = await api.post('/auth/login', { email, password });
+
     if (response.data && response.data.token) {
-      localStorage.setItem('user', JSON.stringify(response.data));
-      axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+      const storage = rememberMe ? localStorage : sessionStorage;
+      const otherStorage = rememberMe ? sessionStorage : localStorage;
+
+      storage.setItem('user', JSON.stringify(response.data));
+      otherStorage.removeItem('user');
+
       setUser(response.data);
     }
     return response.data;
@@ -30,7 +39,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('user');
-    delete axios.defaults.headers.common['Authorization'];
+    sessionStorage.removeItem('user');
     setUser(null);
   };
 

@@ -1,25 +1,26 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:5000/api/drivers';
-
-const getAuthHeaders = () => {
-  const user = JSON.parse(localStorage.getItem('user'));
-  return {
-    headers: { Authorization: user && user.token ? `Bearer ${user.token}` : '' }
-  };
-};
+import api from './api';
 
 export const getAllDrivers = async () => {
-  const response = await axios.get(API_URL, getAuthHeaders());
+  const response = await api.get('/drivers');
+  return response.data;
+};
+
+export const getDriverById = async (id) => {
+  const response = await api.get(`/drivers/${id}`);
   return response.data;
 };
 
 export const createNewDriver = async (driverData) => {
-  const response = await axios.post(API_URL, driverData, getAuthHeaders());
+  const response = await api.post('/drivers', driverData);
+  return response.data;
+};
+
+export const updateDriverById = async (id, driverData) => {
+  const response = await api.put(`/drivers/${id}`, driverData);
   return response.data;
 };
 
 export const deleteDriverById = async (id) => {
-  const response = await axios.delete(`${API_URL}/${id}`, getAuthHeaders());
+  const response = await api.delete(`/drivers/${id}`);
   return response.data;
 };
