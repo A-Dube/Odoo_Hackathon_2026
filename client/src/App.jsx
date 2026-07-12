@@ -9,16 +9,10 @@ import Signup from './pages/Signup';
 import Vehicles from './pages/Vehicles';
 import Drivers from './pages/Drivers';
 import Trips from './pages/Trips';
+import Maintenance from './pages/Maintenance';
+import Expenses from './pages/Expenses';
+import Reports from './pages/Reports';
 import ProtectedRoute from './components/ProtectedRoute';
-
-const PagePlaceholder = ({ title }) => (
-  <div className="bg-white rounded-xl border border-[#E2E8F0] p-8 shadow-xs">
-    <h2 className="text-xl font-bold text-[#0F172A] mb-1">{title} Module</h2>
-    <p className="text-xs text-[#64748B] font-medium">
-      This view is mapped securely within the platform dashboard grid layout frame.
-    </p>
-  </div>
-);
 
 function AppContent() {
   const { user } = useContext(AuthContext);
@@ -68,19 +62,19 @@ function AppContent() {
 
             <Route path="/maintenance" element={
               <ProtectedRoute allowedRoles={['Fleet Manager', 'Safety Officer']}>
-                <PagePlaceholder title="Vehicle Service Logging" />
+                <Maintenance />
               </ProtectedRoute>
             } />
 
             <Route path="/expenses" element={
               <ProtectedRoute allowedRoles={['Fleet Manager', 'Financial Analyst']}>
-                <PagePlaceholder title="Fuel Logs & Expense Ledger" />
+                <Expenses />
               </ProtectedRoute>
             } />
 
             <Route path="/reports" element={
               <ProtectedRoute allowedRoles={['Fleet Manager', 'Financial Analyst', 'Safety Officer']}>
-                <PagePlaceholder title="Operational Intelligence Metrics" />
+                <Reports />
               </ProtectedRoute>
             } />
 
