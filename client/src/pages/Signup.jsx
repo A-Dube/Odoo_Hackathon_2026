@@ -24,13 +24,12 @@ const Signup = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#F8FAFC] px-4 font-sans select-none">
       <div className="text-center mb-8 flex flex-col items-center">
-        <div className="w-12 h-12 bg-[#0F172A] text-white rounded-xl flex items-center justify-center shadow-sm mb-3">
-          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 17a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"/>
-            <path d="M19 17a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"/>
-            <path d="M13 6h3a2 2 0 0 1 2 2v7"/>
-            <path d="M5 15V8a2 2 0 0 1 2-2h10"/>
-          </svg>
+        <div className="w-12 h-12 bg-[#0F172A] rounded-xl flex items-center justify-center shadow-sm mb-3 overflow-hidden">
+          <img 
+          src="/Logo.png" 
+          alt="TransitOps Logo" 
+          className="w-full h-full object-cover"
+          />
         </div>
         <h1 className="text-3xl font-extrabold text-[#0F172A] tracking-tight">TransitOps</h1>
         <p className="text-xs text-[#64748B] tracking-wide mt-1 font-medium">Operational Intelligence</p>
